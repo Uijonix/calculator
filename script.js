@@ -1,63 +1,82 @@
 "use strict";
 
-// == DOM References ===
+let firstOperand = null;
+let secondOperand = null;
+let operator = null;
+
+const buffer = [];
+
+const operators = "-*+/";
+const acceptedDisplayValues = "1234567890.";
+
 const display = document.querySelector(".calc-input");
-const calcCont = document.querySelector(".calc-cont");
+const btnsContainer = document.querySelector(".btns-cont");
 
-const calculator = {
-  expression: "",
+btnsContainer.addEventListener("click", (e) => {
+  if (e.target.tagName !== "BUTTON") return;
+  const buttonValue = e.target.textContent;
 
-  firstNum: 0,
-  secondNum: 0,
+  if (buttonValue === "AC") {
+    clearDisplay();
+  }
 
-  acceptedValues: "0123456789./*-+",
-
-  add() {
-    return this.firstNum + this.secondNum;
-  },
-  subtract() {
-    return this.firstNum - this.secondNum;
-  },
-  multiply() {
-    this.firstNum * this.secondNum;
-  },
-  divide() {
-    this.firstNum / this.secondNum;
-  },
-  clearDisplay() {
-    display.value = "";
-  },
-  populateDisplay(btn) {
-    display.value += btn;
-  },
-};
-// == Event Handlers ==
-calcCont.addEventListener("click", (e) => {
-  let button = e.target.textContent;
-  let operators = "/*-+";
-  let lastDisplayValue = display.value.at(-1);
-
-  if (
-    e.target.tagName.toLowerCase() !== "button" ||
-    (button === "." && display.value.includes(".")) ||
-    (operators.includes(button) && !Number.isInteger(+lastDisplayValue))
-  )
+  if (buttonValue === "=") {
     return;
-
-  if (button === "AC" && display.value !== "") {
-    calculator.clearDisplay();
   }
 
-  if (button === "=" && display.value !== "") {
-    if (operators.includes(lastDisplayValue)) return;
-    calculator.expression = display.value;
+  if (acceptedDisplayValues.includes(buttonValue)) {
+    buffer.push(buttonValue);
+    updateDisplay(buffer);
   }
 
-  if (calculator.acceptedValues.includes(button)) {
-    calculator.populateDisplay(button);
+  if (operators.includes(buttonValue)) {
+    if (!firstOperand) {
+      firstOperand = +buffer.splice(0, Infinity).join("");
+    }
+
+    if (firstOperand && !secondOperand) {
+      secondOperand = +buffer.splice(0, Infinity).join("");
+    }
+
+    if (firstOperand && secondOperand && operator) {
+      buffer.push(operate(firstOperand, operator, secondOperand));
+      updateDisplay(buffer);
+      operator = null;
+      secondOperand = null;
+      buffer.splice(0, Infinity);
+    }
+    operator = buttonValue;
   }
+
+  console.log(buffer);
+  console.log("first: " + firstOperand);
+  console.log("second: " + secondOperand);
+  console.log("operator: " + operator);
 });
 
-// == Helper Functions ==
+function operate(a, opr, b) {
+  switch (opr) {
+    case "+":
+      return a + b;
+    case "-":
+      return a - b;
+    case "*":
+      return a * b;
+    case "/":
+      return a / b;
+    default:
+      console.log("No match!");
+  }
+}
 
-// console.log(!isNaN(NaN))
+function updateDisplay(arr) {
+  display.value = arr.join("");
+}
+
+function clearDisplay() {
+  display.value = "";
+  firstOperand = null;
+  secondOperand = null;
+  operator = null;
+  buffer.splice(0, Infinity);
+}
