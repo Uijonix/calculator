@@ -1,86 +1,146 @@
 "use strict";
 
+// === Globale variable ===//
+
 let firstOperand = null;
 let secondOperand = null;
 let operator = null;
 
-const buffer = [];
+let buffer = [];
 
-const operators = "-*+/";
-const acceptedDisplayValues = "1234567890.";
+// === DOM references === //
 
 const display = document.querySelector(".calc-input");
 const btnsContainer = document.querySelector(".btns-cont");
+const numButtons = document.querySelectorAll(".num");
+const operatorButtons = document.querySelectorAll(".opr-btn");
+const assignBtn = document.querySelector(".assig-btn");
+const utilityBtns = document.querySelectorAll(".utility-btn");
+const oprIndicatorDisplay = document.querySelector(".opr-indicator");
+
+// === Event listeners === //
+
+utilityBtns.forEach((btn) => {
+  btn.addEventListener("click", handleUtiliBtn);
+});
+
+numButtons.forEach((btn) => {
+  btn.addEventListener("click", handleNumBtn);
+});
+operatorButtons.forEach((btn) => {
+  btn.addEventListener("click", handleOperatoerBtn);
+});
 
 btnsContainer.addEventListener("click", (e) => {
-  const buttonValue = e.target.textContent;
-  if (
-    e.target.tagName !== "BUTTON" ||
-    (buttonValue === "." && display.value.includes(buttonValue))
-  ) {
-    return;
-  }
-
-  if (buttonValue === "=") {
-    if (firstOperand && !secondOperand && operator) {
-      secondOperand = getOperand();
-      calculate();
-      clearData();
-    }
-    return;
-  }
-
-  if (buttonValue === "AC" && display.value !== "") {
-    clearDisplay();
-    clearData();
-  }
-
-  if (acceptedDisplayValues.includes(buttonValue)) {
-    buffer.push(buttonValue);
-    updateDisplay(buffer);
-  }
-
-  if (operators.includes(buttonValue)) {
-    if (!firstOperand) {
-      firstOperand = getOperand();
-    }
-
-    if (firstOperand && !secondOperand) {
-      secondOperand = getOperand();
-    }
-
-    if (firstOperand && secondOperand && operator) {
-      calculate();
-    }
-    operator = buttonValue;
-  }
-
   console.log(buffer);
   console.log("first: " + firstOperand);
   console.log("second: " + secondOperand);
   console.log("operator: " + operator);
 });
 
-function calculate() {
-  let finalResult =
-    Math.round(operate(firstOperand, operator, secondOperand) * 100000) /
-    100000;
+assignBtn.addEventListener("click", (e) => {
+  if (firstOperand != null && operator != null && buffer.length > 0) {
+    secondOperand = parseFloat(buffer.join(""));
+    clearBuffer();
+    let finalResult =
+      Math.round(operate(firstOperand, operator, secondOperand) * 10000) /
+      10000;
 
-  buffer.push(finalResult);
+    if (isNaN(finalResult)) {
+      showDivisionError();
+      updateDisplay(buffer);
+      clearBuffer();
+      clearData();
+      return;
+    }
 
+    buffer.push(finalResult);
+    updateDisplay(buffer);
+
+    clearBuffer();
+    clearData();
+  }
+});
+
+// === Event handlers === //
+
+function handleNumBtn(e) {
+  buffer.push(+e.target.textContent);
   updateDisplay(buffer);
-  firstOperand = getOperand();
-
-  operator = null;
-  secondOperand = null;
-  buffer.splice(0, Infinity);
 }
 
-function getOperand() {
-  return +buffer.splice(0, Infinity).join("");
+function handleOperatoerBtn(e) {
+  let button = e.target.textContent;
+  if (firstOperand == null && buffer.length > 0) {
+    firstOperand = parseFloat(buffer.join(""));
+    operator = button;
+    clearBuffer();
+    updateOperDisplay();
+    return;
+  }
+
+  if (buffer.length > 0 && operator != null && firstOperand != null) {
+    secondOperand = parseFloat(buffer.join(""));
+    buffer = [];
+  }
+
+  if (firstOperand != null && secondOperand != null && operator != null) {
+    let solvedResult =
+      Math.round(operate(firstOperand, operator, secondOperand) * 10000) /
+      10000;
+
+    if (isNaN(solvedResult)) {
+      showDivisionError();
+      updateDisplay(buffer);
+      clearBuffer();
+      clearData();
+      return;
+    }
+
+    buffer.push(solvedResult);
+    updateDisplay(buffer);
+
+    firstOperand = parseFloat(buffer.join(""));
+    clearBuffer();
+    secondOperand = null;
+  }
+  if (buffer.length === 0 && display.value.length > 0) {
+    operator = button;
+  }
+  updateOperDisplay();
+}
+
+function handleUtiliBtn(e) {
+  let button = e.target.textContent;
+  if (button === "<" && buffer.length !== 0) {
+    buffer.pop();
+    updateDisplay(buffer);
+  }
+  if (button === "AC") {
+    clearDisplay();
+    clearData();
+    clearBuffer();
+  } else if (button === "+/-") {
+    if (buffer.length === 0) return;
+    buffer[0] = -buffer[0];
+    updateDisplay(buffer);
+  } else if (button === "%") {
+    if (buffer.length === 0) return;
+    if (!isNaN(display.value)) buffer = [parseFloat(buffer.join("")) / 100];
+    updateDisplay(buffer);
+  }
+}
+
+// === Helper function === //
+
+function updateOperDisplay() {
+  oprIndicatorDisplay.textContent = operator;
 }
 
 function operate(a, opr, b) {
+  if (opr === "/" && b === 0) {
+    return "error";
+  }
   switch (opr) {
     case "+":
       return a + b;
@@ -95,6 +155,10 @@ function operate(a, opr, b) {
   }
 }
 
+function showDivisionError() {
+  buffer = ["can't divid by 0"];
+}
+
 function updateDisplay(arr) {
   display.value = arr.join("");
 }
@@ -107,7 +171,10 @@ function clearData() {
   firstOperand = null;
   secondOperand = null;
   operator = null;
-  buffer.splice(0, Infinity);
+  updateOperDisplay();
+}
+function clearBuffer() {
+  buffer = [];
 }
 
-// console.log(2.toFixed(6))
+console.log(Math.round("ei" * 10) / 10);

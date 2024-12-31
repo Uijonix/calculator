@@ -40,6 +40,7 @@ body {
   max-width: 99%;
   max-height: 500px;
   background-color: #333;
+  position: relative;
 }
 
 .calc-cont,
@@ -51,6 +52,16 @@ body {
   border-bottom: 1px solid #333;
 }
 
+.opr-indicator {
+  position: absolute;
+  font-size: 1.5rem;
+  line-height: 0;
+  left: 1.6rem;
+  top: 2.5rem;
+  color: #88460c;
+  font-weight: bold;
+}
+
 .calc-input {
   box-shadow: 0 0 5px 0 #000;
   min-height: 5rem;
@@ -58,7 +69,7 @@ body {
   background-color: #ccc;
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   color: #333;
   text-align: end;
   outline: 0;
