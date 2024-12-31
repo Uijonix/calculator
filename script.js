@@ -17,8 +17,18 @@ btnsContainer.addEventListener("click", (e) => {
   if (
     e.target.tagName !== "BUTTON" ||
     (buttonValue === "." && display.value.includes(buttonValue))
-  )
+  ) {
     return;
+  }
+
+  if (buttonValue === "=") {
+    if (firstOperand && !secondOperand && operator) {
+      secondOperand = getOperand();
+      calculate();
+      clearData();
+    }
+    return;
+  }
 
   if (buttonValue === "AC" && display.value !== "") {
     clearDisplay();
@@ -45,13 +55,6 @@ btnsContainer.addEventListener("click", (e) => {
     operator = buttonValue;
   }
 
-  if (buttonValue === "=" && firstOperand && !secondOperand && operator) {
-    secondOperand = getOperand();
-    calculate();
-    clearData();
-    // return;
-  }
-
   console.log(buffer);
   console.log("first: " + firstOperand);
   console.log("second: " + secondOperand);
@@ -59,7 +62,12 @@ btnsContainer.addEventListener("click", (e) => {
 });
 
 function calculate() {
-  buffer.push(operate(firstOperand, operator, secondOperand));
+  let finalResult =
+    Math.round(operate(firstOperand, operator, secondOperand) * 100000) /
+    100000;
+
+  buffer.push(finalResult);
+
   updateDisplay(buffer);
   firstOperand = getOperand();
 
@@ -101,3 +109,5 @@ function clearData() {
   operator = null;
   buffer.splice(0, Infinity);
 }
+
+// console.log(2.toFixed(6))
