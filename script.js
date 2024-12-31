@@ -13,15 +13,16 @@ const display = document.querySelector(".calc-input");
 const btnsContainer = document.querySelector(".btns-cont");
 
 btnsContainer.addEventListener("click", (e) => {
-  if (e.target.tagName !== "BUTTON") return;
   const buttonValue = e.target.textContent;
-
-  if (buttonValue === "AC") {
-    clearDisplay();
-  }
-
-  if (buttonValue === "=") {
+  if (
+    e.target.tagName !== "BUTTON" ||
+    (buttonValue === "." && display.value.includes(buttonValue))
+  )
     return;
+
+  if (buttonValue === "AC" && display.value !== "") {
+    clearDisplay();
+    clearData();
   }
 
   if (acceptedDisplayValues.includes(buttonValue)) {
@@ -31,21 +32,24 @@ btnsContainer.addEventListener("click", (e) => {
 
   if (operators.includes(buttonValue)) {
     if (!firstOperand) {
-      firstOperand = +buffer.splice(0, Infinity).join("");
+      firstOperand = getOperand();
     }
 
     if (firstOperand && !secondOperand) {
-      secondOperand = +buffer.splice(0, Infinity).join("");
+      secondOperand = getOperand();
     }
 
     if (firstOperand && secondOperand && operator) {
-      buffer.push(operate(firstOperand, operator, secondOperand));
-      updateDisplay(buffer);
-      operator = null;
-      secondOperand = null;
-      buffer.splice(0, Infinity);
+      calculate();
     }
     operator = buttonValue;
+  }
+
+  if (buttonValue === "=" && firstOperand && !secondOperand && operator) {
+    secondOperand = getOperand();
+    calculate();
+    clearData();
+    // return;
   }
 
   console.log(buffer);
@@ -53,6 +57,20 @@ btnsContainer.addEventListener("click", (e) => {
   console.log("second: " + secondOperand);
   console.log("operator: " + operator);
 });
+
+function calculate() {
+  buffer.push(operate(firstOperand, operator, secondOperand));
+  updateDisplay(buffer);
+  firstOperand = getOperand();
+
+  operator = null;
+  secondOperand = null;
+  buffer.splice(0, Infinity);
+}
+
+function getOperand() {
+  return +buffer.splice(0, Infinity).join("");
+}
 
 function operate(a, opr, b) {
   switch (opr) {
@@ -75,6 +93,9 @@ function updateDisplay(arr) {
 
 function clearDisplay() {
   display.value = "";
+}
+
+function clearData() {
   firstOperand = null;
   secondOperand = null;
   operator = null;
