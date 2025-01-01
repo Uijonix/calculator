@@ -6,7 +6,7 @@ let firstOperand = null;
 let secondOperand = null;
 let operator = null;
 
-let buffer = [];
+let result = null;
 
 // === DOM references === //
 
@@ -17,119 +17,113 @@ const operatorButtons = document.querySelectorAll(".opr-btn");
 const assignBtn = document.querySelector(".assig-btn");
 const utilityBtns = document.querySelectorAll(".utility-btn");
 const oprIndicatorDisplay = document.querySelector(".opr-indicator");
+const dotBtn = document.querySelector(".dot-btn");
 
 // === Event listeners === //
 
 utilityBtns.forEach((btn) => {
-  btn.addEventListener("click", handleUtiliBtn);
+  btn.addEventListener("click", (e) => {
+    let button = e.target.textContent;
+    if (button === "<" && display.value !== "") {
+      let value = [...display.value];
+      value.pop();
+      display.value = value.join("");
+    }
+    if (button === "AC") {
+      clearDisplay();
+      clearData();
+    } else if (button === "+/-" && display.value !== "") {
+      display.value = -display.value;
+    } else if (button === "%" && display.value != "") {
+      if (!isNaN(display.value)) {
+        display.value = parseFloat(display.value) / 100;
+      }
+    }
+  });
 });
 
 numButtons.forEach((btn) => {
-  btn.addEventListener("click", handleNumBtn);
+  btn.addEventListener("click", (e) => {
+    if (display.value.includes("can't")) clearDisplay();
+    if (
+      secondOperand !== null &&
+      firstOperand !== null &&
+      operator !== null &&
+      display.value !== ""
+    ) {
+      firstOperand = parseFloat(display.value);
+      clearDisplay();
+      secondOperand = null;
+    }
+    display.value += e.target.textContent;
+  });
 });
+
 operatorButtons.forEach((btn) => {
-  btn.addEventListener("click", handleOperatoerBtn);
+  btn.addEventListener("click", (e) => {
+    if (display.value === "") return;
+
+    if (firstOperand === null && display.value !== "") {
+      firstOperand = parseFloat(display.value);
+    }
+
+    if (operator === null && firstOperand !== null) {
+      operator = e.target.textContent;
+      clearDisplay();
+      updateOperDisplay();
+      return;
+    }
+
+    if (secondOperand === null && firstOperand !== null && operator !== null) {
+      secondOperand = parseFloat(display.value);
+
+      result = getResult();
+
+      if (isNaN(result)) {
+        showDivisionError();
+        clearData();
+        return;
+      }
+
+      display.value = result;
+      operator = e.target.textContent;
+      updateOperDisplay();
+    }
+  });
 });
 
 btnsContainer.addEventListener("click", (e) => {
-  console.log(buffer);
   console.log("first: " + firstOperand);
   console.log("second: " + secondOperand);
   console.log("operator: " + operator);
 });
 
 assignBtn.addEventListener("click", (e) => {
-  if (firstOperand != null && operator != null && buffer.length > 0) {
-    secondOperand = parseFloat(buffer.join(""));
-    clearBuffer();
-    let finalResult =
-      Math.round(operate(firstOperand, operator, secondOperand) * 10000) /
-      10000;
+  if (
+    secondOperand === null &&
+    firstOperand !== null &&
+    operator !== null &&
+    display.value !== ""
+  ) {
+    secondOperand = parseFloat(display.value);
+    result = getResult();
 
-    if (isNaN(finalResult)) {
+    if (isNaN(result)) {
       showDivisionError();
-      updateDisplay(buffer);
-      clearBuffer();
       clearData();
       return;
     }
 
-    buffer.push(finalResult);
-    updateDisplay(buffer);
-
-    clearBuffer();
+    display.value = result;
     clearData();
   }
 });
 
-// === Event handlers === //
+dotBtn.addEventListener("click", (e) => {
+  if(display.value.includes("."))return;
 
-function handleNumBtn(e) {
-  buffer.push(+e.target.textContent);
-  updateDisplay(buffer);
-}
-
-function handleOperatoerBtn(e) {
-  let button = e.target.textContent;
-  if (firstOperand == null && buffer.length > 0) {
-    firstOperand = parseFloat(buffer.join(""));
-    operator = button;
-    clearBuffer();
-    updateOperDisplay();
-    return;
-  }
-
-  if (buffer.length > 0 && operator != null && firstOperand != null) {
-    secondOperand = parseFloat(buffer.join(""));
-    buffer = [];
-  }
-
-  if (firstOperand != null && secondOperand != null && operator != null) {
-    let solvedResult =
-      Math.round(operate(firstOperand, operator, secondOperand) * 10000) /
-      10000;
-
-    if (isNaN(solvedResult)) {
-      showDivisionError();
-      updateDisplay(buffer);
-      clearBuffer();
-      clearData();
-      return;
-    }
-
-    buffer.push(solvedResult);
-    updateDisplay(buffer);
-
-    firstOperand = parseFloat(buffer.join(""));
-    clearBuffer();
-    secondOperand = null;
-  }
-  if (buffer.length === 0 && display.value.length > 0) {
-    operator = button;
-  }
-  updateOperDisplay();
-}
-
-function handleUtiliBtn(e) {
-  let button = e.target.textContent;
-  if (button === "<" && buffer.length !== 0) {
-    buffer.pop();
-    updateDisplay(buffer);
-  }
-  if (button === "AC") {
-    clearDisplay();
-    clearData();
-    clearBuffer();
-  } else if (button === "+/-") {
-    if (buffer.length === 0) return;
-    buffer[0] = -buffer[0];
-    updateDisplay(buffer);
-  } else if (button === "%") {
-    if (buffer.length === 0) return;
-    if (!isNaN(display.value)) buffer = [parseFloat(buffer.join("")) / 100];
-    updateDisplay(buffer);
-  }
-}
+  display.value += e.target.textContent;
+})
 
 // === Helper function === //
 
@@ -150,17 +144,17 @@ function operate(a, opr, b) {
       return a * b;
     case "/":
       return a / b;
-    default:
-      console.log("No match!");
   }
 }
 
 function showDivisionError() {
-  buffer = ["can't divid by 0"];
+  display.value = "can't divid by 0";
 }
 
-function updateDisplay(arr) {
-  display.value = arr.join("");
+function getResult() {
+  return (
+    Math.round(operate(firstOperand, operator, secondOperand) * 10000) / 10000
+  );
 }
 
 function clearDisplay() {
@@ -171,10 +165,5 @@ function clearData() {
   firstOperand = null;
   secondOperand = null;
   operator = null;
-  updateOperDisplay();
+  oprIndicatorDisplay.textContent = "";
 }
-function clearBuffer() {
-  buffer = [];
-}
-
-console.log(Math.round("ei" * 10) / 10);
