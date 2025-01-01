@@ -34,12 +34,35 @@ body {
   align-items: center;
 }
 
+.keyboard-keys-list {
+  background-color: #075c5f;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 1.3rem;
+  border-radius: 0.5rem;
+  color: #ccc;
+  box-shadow: 0 0 5px 0 #333;
+  line-height: 1.2;
+}
+.keyboard-keys-list ul,
+.keyboard-keys-list h2 {
+  margin-bottom: 1rem;
+}
+
+.keyboard-keys-list ul {
+  list-style: none;
+}
+
+.keyboard-key {
+  font-weight: bold;
+}
+
 .calc-cont {
   box-shadow: inset 0 0 10px 0 #808080;
   border-radius: 1rem;
   width: 400px;
   max-width: 99%;
-  max-height: 500px;
+  max-height: 700px;
   background-color: #333;
   position: relative;
 }
@@ -76,13 +99,14 @@ body {
   outline: 0;
   border: none;
   font-weight: bold;
+  cursor: default;
 }
 
 .btns-cont {
   display: flex;
   flex-wrap: wrap;
   flex: 1;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .btn {
@@ -125,7 +149,7 @@ body {
 }
 
 .lt-btn {
-  margin-left: 28%
+  margin-left: 28%;
 }
 .footer {
   padding: 1rem;

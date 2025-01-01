@@ -11,7 +11,6 @@ let result = null;
 // === DOM references === //
 
 const display = document.querySelector(".calc-input");
-const btnsContainer = document.querySelector(".btns-cont");
 const numButtons = document.querySelectorAll(".num");
 const operatorButtons = document.querySelectorAll(".opr-btn");
 const assignBtn = document.querySelector(".assig-btn");
@@ -96,12 +95,6 @@ operatorButtons.forEach((btn) => {
   });
 });
 
-btnsContainer.addEventListener("click", (e) => {
-  console.log("first: " + firstOperand);
-  console.log("second: " + secondOperand);
-  console.log("operator: " + operator);
-});
-
 assignBtn.addEventListener("click", (e) => {
   if (
     secondOperand === null &&
@@ -120,6 +113,7 @@ assignBtn.addEventListener("click", (e) => {
 
     display.value = result;
     clearData();
+    oprIndicatorDisplay.textContent = "=";
   }
 });
 
@@ -131,7 +125,7 @@ dotBtn.addEventListener("click", (e) => {
 
 document.addEventListener("keyup", (e) => {
   console.log(e.key);
-  let event = new Event("click");
+  let event = new Event("click", { bubbles: true });
 
   if (e.ctrlKey && e.key.toLowerCase() === "c")
     clickButton(utilityBtns, 0, event);
@@ -144,9 +138,9 @@ document.addEventListener("keyup", (e) => {
   if (e.key === "/") clickButton(operatorButtons, 0, event);
   if (e.shiftKey && e.key === "*") clickButton(operatorButtons, 1, event);
   if (e.key === "-") clickButton(operatorButtons, 2, event);
-  if (e.shiftKey && e.key === "+") clickButton(operatorButtons, 3, event);
+  if (e.shiftKey && e.key.toLowerCase() === "q") clickButton(operatorButtons, 3, event);
 
-  if (e.key === "=") assignBtn.dispatchEvent(event);
+  if (e.key === "Enter") assignBtn.dispatchEvent(event);
 
   if (e.key === "1") clickButton(numButtons, 6, event);
   if (e.key === "2") clickButton(numButtons, 7, event);
@@ -158,6 +152,8 @@ document.addEventListener("keyup", (e) => {
   if (e.key === "4") clickButton(numButtons, 3, event);
   if (e.key === "5") clickButton(numButtons, 4, event);
   if (e.key === "6") clickButton(numButtons, 5, event);
+
+  if (e.key === ".") dotBtn.dispatchEvent(event);
 });
 
 // === Helper function === //
@@ -205,3 +201,12 @@ function clearData() {
 function clickButton(array, buttonArrayIndex, customEvent) {
   array[buttonArrayIndex].dispatchEvent(customEvent);
 }
+
+// see what is happening in the console
+const btnsContainer = document.querySelector(".btns-cont");
+
+btnsContainer.addEventListener("click", (e) => {
+  console.log("first: " + firstOperand);
+  console.log("second: " + secondOperand);
+  console.log("operator: " + operator);
+});
