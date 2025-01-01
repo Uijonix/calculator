@@ -32,7 +32,11 @@ utilityBtns.forEach((btn) => {
     if (button === "AC") {
       clearDisplay();
       clearData();
-    } else if (button === "+/-" && display.value !== "") {
+    } else if (
+      button === "+/-" &&
+      display.value !== "" &&
+      display.value !== "."
+    ) {
       display.value = -display.value;
     } else if (button === "%" && display.value != "") {
       if (!isNaN(display.value)) {
@@ -120,10 +124,41 @@ assignBtn.addEventListener("click", (e) => {
 });
 
 dotBtn.addEventListener("click", (e) => {
-  if(display.value.includes("."))return;
+  if (display.value.includes(".")) return;
 
   display.value += e.target.textContent;
-})
+});
+
+document.addEventListener("keyup", (e) => {
+  console.log(e.key);
+  let event = new Event("click");
+
+  if (e.ctrlKey && e.key.toLowerCase() === "c")
+    clickButton(utilityBtns, 0, event);
+  if (e.ctrlKey && e.key.toLowerCase() === "1")
+    clickButton(utilityBtns, 1, event);
+  if (e.ctrlKey && e.key.toLowerCase() === "5")
+    clickButton(utilityBtns, 2, event);
+  if (e.key === "Backspace") clickButton(utilityBtns, 3, event);
+
+  if (e.key === "/") clickButton(operatorButtons, 0, event);
+  if (e.shiftKey && e.key === "*") clickButton(operatorButtons, 1, event);
+  if (e.key === "-") clickButton(operatorButtons, 2, event);
+  if (e.shiftKey && e.key === "+") clickButton(operatorButtons, 3, event);
+
+  if (e.key === "=") assignBtn.dispatchEvent(event);
+
+  if (e.key === "1") clickButton(numButtons, 6, event);
+  if (e.key === "2") clickButton(numButtons, 7, event);
+  if (e.key === "3") clickButton(numButtons, 8, event);
+  if (e.key === "0") clickButton(numButtons, 9, event);
+  if (e.key === "7") clickButton(numButtons, 0, event);
+  if (e.key === "8") clickButton(numButtons, 1, event);
+  if (e.key === "9") clickButton(numButtons, 2, event);
+  if (e.key === "4") clickButton(numButtons, 3, event);
+  if (e.key === "5") clickButton(numButtons, 4, event);
+  if (e.key === "6") clickButton(numButtons, 5, event);
+});
 
 // === Helper function === //
 
@@ -166,4 +201,7 @@ function clearData() {
   secondOperand = null;
   operator = null;
   oprIndicatorDisplay.textContent = "";
+}
+function clickButton(array, buttonArrayIndex, customEvent) {
+  array[buttonArrayIndex].dispatchEvent(customEvent);
 }
