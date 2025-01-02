@@ -81,7 +81,8 @@ operatorButtons.forEach((btn) => {
       secondOperand = parseFloat(display.value);
 
       result = getResult();
-
+      
+      // If result variable ends up  been NaN displays can't divid by zero message.
       if (isNaN(result)) {
         showDivisionError();
         clearData();
@@ -105,6 +106,7 @@ assignBtn.addEventListener("click", (e) => {
     secondOperand = parseFloat(display.value);
     result = getResult();
 
+    // If result variable ends up  been NaN displays can't divid by zero message.
     if (isNaN(result)) {
       showDivisionError();
       clearData();
@@ -124,9 +126,10 @@ dotBtn.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-  console.log(e.key);
+  // custom event to click buttons when keyboard is used
   let event = new Event("click", { bubbles: true });
-
+  
+  // utility buttons
   if (e.ctrlKey && e.key.toLowerCase() === "c")
     clickButton(utilityBtns, 0, event);
   if (e.ctrlKey && e.key.toLowerCase() === "1")
@@ -135,13 +138,17 @@ document.addEventListener("keyup", (e) => {
     clickButton(utilityBtns, 2, event);
   if (e.key === "Backspace") clickButton(utilityBtns, 3, event);
 
+  // Operator buttons
   if (e.key === "/") clickButton(operatorButtons, 0, event);
   if (e.shiftKey && e.key === "*") clickButton(operatorButtons, 1, event);
   if (e.key === "-") clickButton(operatorButtons, 2, event);
-  if (e.shiftKey && e.key.toLowerCase() === "q") clickButton(operatorButtons, 3, event);
+  if (e.shiftKey && e.key.toLowerCase() === "q")
+    clickButton(operatorButtons, 3, event);
 
+  // Enter button
   if (e.key === "Enter") assignBtn.dispatchEvent(event);
 
+  // Number buttons
   if (e.key === "1") clickButton(numButtons, 6, event);
   if (e.key === "2") clickButton(numButtons, 7, event);
   if (e.key === "3") clickButton(numButtons, 8, event);
@@ -153,6 +160,7 @@ document.addEventListener("keyup", (e) => {
   if (e.key === "5") clickButton(numButtons, 4, event);
   if (e.key === "6") clickButton(numButtons, 5, event);
 
+  // Dot button
   if (e.key === ".") dotBtn.dispatchEvent(event);
 });
 
@@ -164,6 +172,7 @@ function updateOperDisplay() {
 
 function operate(a, opr, b) {
   if (opr === "/" && b === 0) {
+    // Cause Math.round() return NaN
     return "error";
   }
   switch (opr) {
@@ -198,15 +207,16 @@ function clearData() {
   operator = null;
   oprIndicatorDisplay.textContent = "";
 }
+
 function clickButton(array, buttonArrayIndex, customEvent) {
   array[buttonArrayIndex].dispatchEvent(customEvent);
 }
 
 // see what is happening in the console
-const btnsContainer = document.querySelector(".btns-cont");
+// const btnsContainer = document.querySelector(".btns-cont");
 
-btnsContainer.addEventListener("click", (e) => {
-  console.log("first: " + firstOperand);
-  console.log("second: " + secondOperand);
-  console.log("operator: " + operator);
-});
+// btnsContainer.addEventListener("click", (e) => {
+//   console.log("first: " + firstOperand);
+//   console.log("second: " + secondOperand);
+//   console.log("operator: " + operator);
+// });
