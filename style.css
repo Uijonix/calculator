@@ -44,7 +44,7 @@ body {
   padding: 0.3rem 0.9rem;
   border-radius: 0.5rem;
   color: #ccc;
-  box-shadow: 0 0 0.3rem 0 #333;
+  box-shadow: 0 0 .3rem 0 #333;
 }
 .keyboard-keys-list ul,
 .keyboard-keys-list h2 {
@@ -60,7 +60,7 @@ body {
 }
 
 .calc-cont {
-  box-shadow: inset 0 0 10px 0 #808080;
+  box-shadow: inset 0 0 .18rem 0 #808080;
   border-radius: 1rem;
   width: 400px;
   max-width: 99%;

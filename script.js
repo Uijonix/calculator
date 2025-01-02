@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // === Globale variable ===//
 
@@ -10,34 +10,34 @@ let result = null;
 
 // === DOM references === //
 
-const display = document.querySelector(".calc-input");
-const numButtons = document.querySelectorAll(".num");
-const operatorButtons = document.querySelectorAll(".opr-btn");
-const assignBtn = document.querySelector(".assig-btn");
-const utilityBtns = document.querySelectorAll(".utility-btn");
-const oprIndicatorDisplay = document.querySelector(".opr-indicator");
-const dotBtn = document.querySelector(".dot-btn");
+const display = document.querySelector('.calc-input');
+const numButtons = document.querySelectorAll('.num');
+const operatorButtons = document.querySelectorAll('.opr-btn');
+const assignBtn = document.querySelector('.assig-btn');
+const utilityBtns = document.querySelectorAll('.utility-btn');
+const oprIndicatorDisplay = document.querySelector('.opr-indicator');
+const dotBtn = document.querySelector('.dot-btn');
 
 // === Event listeners === //
 
 utilityBtns.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
+  btn.addEventListener('click', (e) => {
     let button = e.target.textContent;
-    if (button === "<" && display.value !== "") {
+    if (button === '<' && display.value !== '') {
       let value = [...display.value];
       value.pop();
-      display.value = value.join("");
+      display.value = value.join('');
     }
-    if (button === "AC") {
+    if (button === 'AC') {
       clearDisplay();
       clearData();
     } else if (
-      button === "+/-" &&
-      display.value !== "" &&
-      display.value !== "."
+      button === '+/-' &&
+      display.value !== '' &&
+      display.value !== '.'
     ) {
       display.value = -display.value;
-    } else if (button === "%" && display.value != "") {
+    } else if (button === '%' && display.value != '') {
       if (!isNaN(display.value)) {
         display.value = parseFloat(display.value) / 100;
       }
@@ -46,13 +46,19 @@ utilityBtns.forEach((btn) => {
 });
 
 numButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
+  btn.addEventListener('click', (e) => {
     if (display.value.includes("can't")) clearDisplay();
+    if (assignBtn.classList.contains('clear')) {
+      clearDisplay();
+      toggleClear();
+      oprIndicatorDisplay.textContent = '';
+    }
+
     if (
       secondOperand !== null &&
       firstOperand !== null &&
       operator !== null &&
-      display.value !== ""
+      display.value !== ''
     ) {
       firstOperand = parseFloat(display.value);
       clearDisplay();
@@ -63,10 +69,10 @@ numButtons.forEach((btn) => {
 });
 
 operatorButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    if (display.value === "") return;
+  btn.addEventListener('click', (e) => {
+    if (display.value === '') return;
 
-    if (firstOperand === null && display.value !== "") {
+    if (firstOperand === null && display.value !== '') {
       firstOperand = parseFloat(display.value);
     }
 
@@ -81,7 +87,7 @@ operatorButtons.forEach((btn) => {
       secondOperand = parseFloat(display.value);
 
       result = getResult();
-      
+
       // If result variable ends up  been NaN displays can't divid by zero message.
       if (isNaN(result)) {
         showDivisionError();
@@ -96,12 +102,12 @@ operatorButtons.forEach((btn) => {
   });
 });
 
-assignBtn.addEventListener("click", (e) => {
+assignBtn.addEventListener('click', (e) => {
   if (
     secondOperand === null &&
     firstOperand !== null &&
     operator !== null &&
-    display.value !== ""
+    display.value !== ''
   ) {
     secondOperand = parseFloat(display.value);
     result = getResult();
@@ -115,53 +121,55 @@ assignBtn.addEventListener("click", (e) => {
 
     display.value = result;
     clearData();
-    oprIndicatorDisplay.textContent = "=";
+    oprIndicatorDisplay.textContent = '=';
+    toggleClear();
   }
 });
 
-dotBtn.addEventListener("click", (e) => {
-  if (display.value.includes(".")) return;
+dotBtn.addEventListener('click', (e) => {
+  if (display.value.includes('.')) return;
 
   display.value += e.target.textContent;
 });
 
-document.addEventListener("keyup", (e) => {
+document.addEventListener('keyup', (e) => {
   // custom event to click buttons when keyboard is used
-  let event = new Event("click", { bubbles: true });
-  
+  let event = new Event('click', { bubbles: true });
+
   // utility buttons
-  if (e.ctrlKey && e.key.toLowerCase() === "c")
+  if (e.ctrlKey && e.key.toLowerCase() === 'c')
     clickButton(utilityBtns, 0, event);
-  if (e.ctrlKey && e.key.toLowerCase() === "1")
+  if (e.ctrlKey && e.key.toLowerCase() === 'z')
     clickButton(utilityBtns, 1, event);
-  if (e.ctrlKey && e.key.toLowerCase() === "5")
+  if (e.ctrlKey && e.key.toLowerCase() === 'm')
     clickButton(utilityBtns, 2, event);
-  if (e.key === "Backspace") clickButton(utilityBtns, 3, event);
+  if (e.key === 'Backspace') clickButton(utilityBtns, 3, event);
 
   // Operator buttons
-  if (e.key === "/") clickButton(operatorButtons, 0, event);
-  if (e.shiftKey && e.key === "*") clickButton(operatorButtons, 1, event);
-  if (e.key === "-") clickButton(operatorButtons, 2, event);
-  if (e.shiftKey && e.key.toLowerCase() === "q")
+  if (e.key === '/') clickButton(operatorButtons, 0, event);
+  if (e.shiftKey && e.key.toLowerCase() === 'b')
+    clickButton(operatorButtons, 1, event);
+  if (e.key === '-') clickButton(operatorButtons, 2, event);
+  if (e.shiftKey && e.key.toLowerCase() === 'q')
     clickButton(operatorButtons, 3, event);
 
   // Enter button
-  if (e.key === "Enter") assignBtn.dispatchEvent(event);
+  if (e.key === 'Enter') assignBtn.dispatchEvent(event);
 
   // Number buttons
-  if (e.key === "1") clickButton(numButtons, 6, event);
-  if (e.key === "2") clickButton(numButtons, 7, event);
-  if (e.key === "3") clickButton(numButtons, 8, event);
-  if (e.key === "0") clickButton(numButtons, 9, event);
-  if (e.key === "7") clickButton(numButtons, 0, event);
-  if (e.key === "8") clickButton(numButtons, 1, event);
-  if (e.key === "9") clickButton(numButtons, 2, event);
-  if (e.key === "4") clickButton(numButtons, 3, event);
-  if (e.key === "5") clickButton(numButtons, 4, event);
-  if (e.key === "6") clickButton(numButtons, 5, event);
+  if (e.key === '1') clickButton(numButtons, 6, event);
+  if (e.key === '2') clickButton(numButtons, 7, event);
+  if (e.key === '3') clickButton(numButtons, 8, event);
+  if (e.key === '0') clickButton(numButtons, 9, event);
+  if (e.key === '7') clickButton(numButtons, 0, event);
+  if (e.key === '8') clickButton(numButtons, 1, event);
+  if (e.key === '9') clickButton(numButtons, 2, event);
+  if (e.key === '4') clickButton(numButtons, 3, event);
+  if (e.key === '5') clickButton(numButtons, 4, event);
+  if (e.key === '6') clickButton(numButtons, 5, event);
 
   // Dot button
-  if (e.key === ".") dotBtn.dispatchEvent(event);
+  if (e.key === '.') dotBtn.dispatchEvent(event);
 });
 
 // === Helper function === //
@@ -171,18 +179,18 @@ function updateOperDisplay() {
 }
 
 function operate(a, opr, b) {
-  if (opr === "/" && b === 0) {
+  if (opr === '/' && b === 0) {
     // Cause Math.round() return NaN
-    return "error";
+    return 'error';
   }
   switch (opr) {
-    case "+":
+    case '+':
       return a + b;
-    case "-":
+    case '-':
       return a - b;
-    case "*":
+    case '*':
       return a * b;
-    case "/":
+    case '/':
       return a / b;
   }
 }
@@ -198,25 +206,29 @@ function getResult() {
 }
 
 function clearDisplay() {
-  display.value = "";
+  display.value = '';
 }
 
 function clearData() {
   firstOperand = null;
   secondOperand = null;
   operator = null;
-  oprIndicatorDisplay.textContent = "";
+  oprIndicatorDisplay.textContent = '';
 }
 
 function clickButton(array, buttonArrayIndex, customEvent) {
   array[buttonArrayIndex].dispatchEvent(customEvent);
 }
 
-// see what is happening in the console
-// const btnsContainer = document.querySelector(".btns-cont");
+function toggleClear() {
+  assignBtn.classList.toggle('clear');
+}
 
-// btnsContainer.addEventListener("click", (e) => {
-//   console.log("first: " + firstOperand);
-//   console.log("second: " + secondOperand);
-//   console.log("operator: " + operator);
+// see what is happening in the console
+// const btnsContainer = document.querySelector('.btns-cont');
+
+// btnsContainer.addEventListener('click', (e) => {
+//   console.log('first: ' + firstOperand);
+//   console.log('second: ' + secondOperand);
+//   console.log('operator: ' + operator);
 // });
