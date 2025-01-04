@@ -8,6 +8,8 @@ let operator = null;
 
 let result = null;
 
+let clickedEqualBtn = false;
+
 // === DOM references === //
 
 const display = document.querySelector('.calc-input');
@@ -18,12 +20,15 @@ const utilityBtns = document.querySelectorAll('.utility-btn');
 const oprIndicatorDisplay = document.querySelector('.opr-indicator');
 const dotBtn = document.querySelector('.dot-btn');
 
+
 // === Event listeners === //
 
 utilityBtns.forEach((btn) => {
   btn.addEventListener('click', (e) => {
     let button = e.target.textContent;
     if (button === '<' && display.value !== '') {
+      if(display.value.length === 1) oprIndicatorDisplay.textContent = "";
+
       let value = [...display.value];
       value.pop();
       display.value = value.join('');
@@ -47,10 +52,12 @@ utilityBtns.forEach((btn) => {
 
 numButtons.forEach((btn) => {
   btn.addEventListener('click', (e) => {
+    if(e.target.textContent === "0" && display.value === "0") return;
     if (display.value.includes("can't")) clearDisplay();
-    if (assignBtn.classList.contains('clear')) {
+    if (clickedEqualBtn) {
       clearDisplay();
-      toggleClear();
+      toggleClickedEqualBtn();
+
       oprIndicatorDisplay.textContent = '';
     }
 
@@ -88,7 +95,7 @@ operatorButtons.forEach((btn) => {
 
       result = getResult();
 
-      // If result variable ends up  been NaN displays can't divid by zero message.
+      // If result variable ends up  being NaN display division message.
       if (isNaN(result)) {
         showDivisionError();
         clearData();
@@ -112,7 +119,7 @@ assignBtn.addEventListener('click', (e) => {
     secondOperand = parseFloat(display.value);
     result = getResult();
 
-    // If result variable ends up  been NaN displays can't divid by zero message.
+    // If result variable ends up  being NaN display division message.
     if (isNaN(result)) {
       showDivisionError();
       clearData();
@@ -122,7 +129,7 @@ assignBtn.addEventListener('click', (e) => {
     display.value = result;
     clearData();
     oprIndicatorDisplay.textContent = '=';
-    toggleClear();
+    toggleClickedEqualBtn();
   }
 });
 
@@ -220,8 +227,8 @@ function clickButton(array, buttonArrayIndex, customEvent) {
   array[buttonArrayIndex].dispatchEvent(customEvent);
 }
 
-function toggleClear() {
-  assignBtn.classList.toggle('clear');
+function toggleClickedEqualBtn(){
+  clickedEqualBtn = !clickedEqualBtn;
 }
 
 // see what is happening in the console

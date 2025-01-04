@@ -94,7 +94,7 @@ body {
   padding: 0.5rem;
   background-color: #ccc;
   border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   font-size: 1.8rem;
   color: #333;
   text-align: end;
@@ -102,10 +102,6 @@ body {
   border: none;
   font-weight: bold;
   cursor: default;
-}
-
-.calc-input::placeholder {
-  color: #333
 }
 
 .btns-cont {
@@ -136,10 +132,6 @@ body {
 
 .btn:active {
   background-color: hsl(28, 84%, 20%);
-}
-
-.wide-btn {
-  flex: 1;
 }
 
 .btn.opr-btn,
